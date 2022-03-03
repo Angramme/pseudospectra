@@ -1,36 +1,9 @@
-from asyncio.windows_events import NULL
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+import matplotlib.figure as fig
 
-
-def matrice_top(n):
-    # fonction qui n'est pas a moi...
-    a = complex(0,0)
-    b = complex(0,0)
-    c = complex(1/2,1/8)
-    d = complex(1,0)
-    e = complex(0,0)
-    res = np.zeros((n, n), np.complex_)
-    # res = [[0 for j in range(n)]for i in range(n)]
-    for i in range(n) : 
-        for j in range(n) : 
-            if(i==j ):
-                res[i][j] = a
-            elif(i == j-1):
-                res[i][j] = b
-            elif(i == j+1):
-                res[i][j] = c
-            elif(i == j-2):
-                res[i][j] = d
-            elif(i==j+2):
-                res[i][j] = e
-            else:
-                res[i][j] = complex(0,0)
-    return res
-    
-
-def basic(A: np.matrix, eps: np.array, step: float =0.5):
+def contours(figure, matrix: np.matrix, eps: np.array, step: float =0.5, onprogress =None, progresstick =.1):
     # 1 find the search grid area
     # 1.1 apply the extended Gershgorins Disc theorem to A to find all discs
     # 1.2 find the boudning rectangle
@@ -39,6 +12,7 @@ def basic(A: np.matrix, eps: np.array, step: float =0.5):
     tb = -math.inf # top bound
     bb = +math.inf # bottom bound
 
+    A = matrix
     n, _ = A.shape
     nsqrt = np.sqrt(n)
     epsmax = np.max(eps)
@@ -51,12 +25,7 @@ def basic(A: np.matrix, eps: np.array, step: float =0.5):
         rb = max(rb, a.real+r)
         bb = min(bb, a.imag-r)
         tb = max(tb, a.imag+r)
-
-    lb = -0.3
-    rb = 0.3
-    bb = -0.3
-    tb = 0.3
-
+        
     # 2 calculate sigmin grid     
     sigmin = np.zeros((
         math.ceil((rb-lb)/step), 
@@ -66,34 +35,42 @@ def basic(A: np.matrix, eps: np.array, step: float =0.5):
     yy = np.linspace(bb, tb, sigmin.shape[1])
     xv, yv = np.meshgrid(xx, yy)
 
+    P_total = sigmin.shape[0]*sigmin.shape[1]
+    P_step  = round(P_total*progresstick)
+    P_stotal = P_total/P_step
+    P_count = 0
+    P_scount = 0
+    P_pprog = 0
+
     for i, p in enumerate(xx):
         for j, q in enumerate(yy):
             _, s, _ = np.linalg.svd((p+q*1j) * np.eye(n) -A)
             sigmin[j, i] = np.min(s)
+            if onprogress:
+                P_count += 1
+                P_scount = P_count // P_step
+                prog = P_scount / P_stotal
+                if prog != P_pprog:
+                    onprogress(prog)
+                    P_pprog = prog
 
-    # if len(eps) > 1:
-    plt.contour(xv, yv, sigmin, levels=eps)
-    # else:
-    #     plt.contour(xv, yv, sigmin)
-    Xs = np.linalg.eig(A)[0]
-    plt.scatter(Xs.real, Xs.imag)
-    R = plt.Rectangle((lb, bb), rb-lb, tb-bb, alpha=1, facecolor='none', edgecolor='red')
-    plt.gca().add_patch(R)
-    print(xv.shape)
-    # plt.grid(color='gray', linestyle='-')
-    plt.show()
+    # F = fig.Figure(figsize=sigmin.shape, dpi=100)
+    F = figure
+    P = F.add_subplot()
+    P.set_aspect(1)
 
+    P.contour(xv, yv, sigmin, levels=eps)
+    
+    EVs = np.linalg.eig(A)[0]
+    P.scatter(EVs.real, EVs.imag)
+    
+    Re = plt.Rectangle((lb, bb), rb-lb, tb-bb, alpha=1, facecolor='none', edgecolor='red')
+    P.add_patch(Re)
 
+    return F
 
-# C = complex
-# A = np.matrix([
-#     [1, 2, 3, 4],
-#     [5, C(6, 3), 7, 8], 
-#     [9, 10, 11, 12],
-#     [13, 14, 15, 16]
-# ])
-# basic(A, 0.5)
-
-# basic(matrice_top(64), [10**-7], step=0.07)
-# basic(matrice_top(64), [10**(-i) for i in range(7, 2, -1)], step=0.035)
-basic(matrice_top(64), [10**(-7)], step=0.005)
+if __name__ == "__main__":
+    # basic(matrice_top(64), [10**-7], step=0.07)
+    # basic(matrice_top(64), [10**(-i) for i in range(7, 2, -1)], step=0.035)
+    # contours(matrice_top(64), [10**(-7)], step=0.005)
+    pass
