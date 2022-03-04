@@ -3,7 +3,7 @@ import math
 import matplotlib.pyplot as plt
 import matplotlib.figure as fig
 
-def contours(figure, matrix: np.matrix, eps: np.array, step: float =0.5, onprogress =None, progresstick =.1):
+def contours(figure, matrix: np.matrix, eps: np.array, step: float =0.5, onprogress =None, progresstick =.01):
     # 1 find the search grid area
     # 1.1 apply the extended Gershgorins Disc theorem to A to find all discs
     # 1.2 find the boudning rectangle
@@ -51,7 +51,8 @@ def contours(figure, matrix: np.matrix, eps: np.array, step: float =0.5, onprogr
                 P_scount = P_count // P_step
                 prog = P_scount / P_stotal
                 if prog != P_pprog:
-                    onprogress(prog)
+                    if not onprogress(prog):
+                        return None
                     P_pprog = prog
 
     # F = fig.Figure(figsize=sigmin.shape, dpi=100)
