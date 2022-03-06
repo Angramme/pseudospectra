@@ -56,6 +56,13 @@ class AlgoWindow:
         self.keep_running = False
         print("please wait while {} terminates...".format(self.name_f))
         if self.start_time != 0: self.calc_th.join()
+
+    def close(self):
+        def __close():
+            self.stop()
+            self.root.destroy()
+        self.root.after(1, __close) # YES this is very needed for some reason!
+        # I guess because it runs the functions on this windows thread
     
     def upprogressbar(self, p):
         if 'normal' != self.root.state(): return
@@ -67,12 +74,6 @@ class AlgoWindow:
     def calc_up(self, tup):
         if tup and self.keep_running: self.upprogressbar(tup[0])
         return self.keep_running
-
-    def close(self):
-        def __close():
-            self.stop()
-            self.root.destroy()
-        self.root.after(1, __close) # YES this is very needed for some reason!
 
     def calculate(self):
         self.contours_f(
