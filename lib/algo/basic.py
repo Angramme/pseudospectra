@@ -3,7 +3,14 @@ import math
 import matplotlib.pyplot as plt
 import matplotlib.figure as fig
 
-def contours(figure, matrix: np.matrix, eps: np.array, step: float =0.5, onprogress =None, progresstick =.01):
+def contours(
+    figure, 
+    matrix: np.matrix, 
+    eps: np.array, 
+    step: float =0.5, 
+    update = lambda: True, 
+    progresstick =.01):
+
     # 1 find the search grid area
     # 1.1 apply the extended Gershgorins Disc theorem to A to find all discs
     # 1.2 find the boudning rectangle
@@ -14,13 +21,13 @@ def contours(figure, matrix: np.matrix, eps: np.array, step: float =0.5, onprogr
 
     A = matrix
     n, _ = A.shape
-    nsqrt = np.sqrt(n)
     epsmax = np.max(eps)
 
     for i in range(n):
         a = A[i, i]
         rA = np.sum(np.abs(A[i])) - np.abs(A[i, i])
-        r = nsqrt * epsmax + rA
+        # r = nsqrt * epsmax + rA
+        r = n * epsmax + rA
         lb = min(lb, a.real-r)
         rb = max(rb, a.real+r)
         bb = min(bb, a.imag-r)
@@ -46,16 +53,13 @@ def contours(figure, matrix: np.matrix, eps: np.array, step: float =0.5, onprogr
         for j, q in enumerate(yy):
             _, s, _ = np.linalg.svd((p+q*1j) * np.eye(n) -A)
             sigmin[j, i] = np.min(s)
-            if onprogress:
-                P_count += 1
-                P_scount = P_count // P_step
-                prog = P_scount / P_stotal
-                if prog != P_pprog:
-                    if not onprogress(prog):
-                        return None
-                    P_pprog = prog
+            P_count += 1
+            P_scount = P_count // P_step
+            prog = P_scount / P_stotal
+            if prog != P_pprog:
+                if not update((prog,)): return None
+                P_pprog = prog
 
-    # F = fig.Figure(figsize=sigmin.shape, dpi=100)
     F = figure
     P = F.add_subplot()
     P.set_aspect(1)
