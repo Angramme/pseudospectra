@@ -56,6 +56,7 @@ class AlgoWindow:
         self.keep_running = False
         print("please wait while {} terminates...".format(self.name_f))
         if self.start_time != 0: self.calc_th.join()
+        print("{} terminated!".format(self.name_f))
 
     def close(self):
         def __close():
@@ -86,4 +87,4 @@ class AlgoWindow:
             )
         if not self.keep_running: return
         self.canvas.draw()
-        self.progress_calc.pack_forget()
+        self.progbar.pack_forget()

@@ -1,7 +1,8 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-import matplotlib.figure as fig
+from lib.math import ssvd_min
+
 
 def contours(
     figure, 
@@ -51,8 +52,10 @@ def contours(
 
     for i, p in enumerate(xx):
         for j, q in enumerate(yy):
-            _, s, _ = np.linalg.svd((p+q*1j) * np.eye(n) -A)
-            sigmin[j, i] = np.min(s)
+            # _, s, _ = np.linalg.svd((p+q*1j) * np.eye(n) -A)
+            # sigmin[j, i] = np.min(s)
+            sigmin[j, i] = ssvd_min((p+q*1j) * np.eye(n) -A)
+
             P_count += 1
             P_scount = P_count // P_step
             prog = P_scount / P_stotal
@@ -73,9 +76,3 @@ def contours(
     P.add_patch(Re)
 
     return F
-
-if __name__ == "__main__":
-    # basic(matrice_top(64), [10**-7], step=0.07)
-    # basic(matrice_top(64), [10**(-i) for i in range(7, 2, -1)], step=0.035)
-    # contours(matrice_top(64), [10**(-7)], step=0.005)
-    pass

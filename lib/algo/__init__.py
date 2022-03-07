@@ -9,7 +9,9 @@ def rescan_algos():
     return __files
 
 def load_mod(name):
-    return importlib.import_module('..'+name, 'lib.algo.subpkg')
+    mod = importlib.import_module('..'+name, 'lib.algo.subpkg')
+    importlib.reload(mod)
+    return mod
 
 __thisfile = pathlib.Path(__file__)
 __thisdir = pathlib.Path(__file__).parent.resolve()

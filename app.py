@@ -1,4 +1,3 @@
-# from lib.algo.basic import contours
 from lib.matrix.matrix import matrice_top
 from lib.algo import list_algos, load_mod, rescan_algos
 
