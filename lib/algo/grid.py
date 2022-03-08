@@ -39,8 +39,8 @@ def contours(
         math.ceil((rb-lb)/step), 
         math.ceil((tb-bb)/step)))
     
-    xx = np.linspace(lb, rb, sigmin.shape[0])
-    yy = np.linspace(bb, tb, sigmin.shape[1])
+    xx = np.linspace(lb, rb, sigmin.shape[1])
+    yy = np.linspace(bb, tb, sigmin.shape[0])
     xv, yv = np.meshgrid(xx, yy)
 
     P_total = sigmin.shape[0]*sigmin.shape[1]
@@ -50,10 +50,9 @@ def contours(
     P_scount = 0
     P_pprog = 0
 
+    print(sigmin.shape)
     for i, p in enumerate(xx):
         for j, q in enumerate(yy):
-            # _, s, _ = np.linalg.svd((p+q*1j) * np.eye(n) -A)
-            # sigmin[j, i] = np.min(s)
             sigmin[j, i] = ssvd_min((p+q*1j) * np.eye(n) -A)
 
             P_count += 1
