@@ -14,7 +14,7 @@ def contours(
     P.set_aspect(1)
 
     EVs = np.linalg.eig(matrix)[0]
-    P.scatter(EVs.real, EVs.imag)
+    P.scatter(EVs.real, EVs.imag, c="green")
 
     for i, E in enumerate(eps):
         def up(t):
@@ -24,7 +24,7 @@ def contours(
             plot=P,
             matrix=matrix, 
             eps=E, 
-            tol=0.1,
+            tol=10e-5,
             update=up, 
             progresstick=progresstick
             )
@@ -48,13 +48,11 @@ def trace_one(
     def pg(x):
         return x * np.eye(An) - A
     def g(x):
-        v = svd_min(pg(x))
-        if v[1].real < 0 or v[1].imag != 0:
-            print("WARNING: v < 0 or v.imag != 0] failed!")
-        return v
+        return svd_min(pg(x))
 
     # find z_1
     EVs = np.linalg.eig(A)[0]
+    plot.scatter(EVs[0].real, EVs[0].imag)
     # lam0 = np.random.choice(EVs)
     # lam_mid = np.average(EVs)
 
@@ -68,18 +66,24 @@ def trace_one(
     z1n = lam0 + theta1n*d0
     uz1n, gz1n, vhz1n = g(z1n)
 
-    point, = plot.plot(z1n.real, z1n.imag, marker="x", c="red")
+    # point, = plot.plot(z1n.real, z1n.imag, marker="x", c="red")
     
+    print(uz1n, gz1n, vhz1n)
+    # print(np.allclose(matrix, np.dot(uz1n * gz1n, vhz1n)))
+    print("avant boucle")
     while abs(gz1n - eps)/eps > tol:
         if not update((.1,)): return None
         z1o = z1n
         uz1o, gz1o, vhz1o = uz1n, gz1n, vhz1n
 
-        theta1n = -(gz1o-eps)/np.real(np.conj(d0)*np.dot(vhz1o, uz1o))
+        theta1n = -(gz1o-eps)/np.real(
+            np.conj(d0)*np.vdot(vhz1o, uz1o)
+            )
         # theta1n = np.random.random()
         print("theta1n : {} | eps : {}".format(theta1n, eps))
-        z1n = lam0 + theta1n*d0
-        point.set_data(z1n.real, z1n.imag)
+        z1n = z1o + theta1n*d0
+        plot.scatter(z1n.real, z1n.imag, s=7**2, marker="x", c="red")
+        # point.set_data(z1n.real, z1n.imag)
 
         uz1n, gz1n, vhz1n = g(z1n)
 

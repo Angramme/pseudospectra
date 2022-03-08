@@ -10,6 +10,9 @@ import time
 import threading
 from functools import partial
 
+from numpy import matrix
+import numpy as np
+
 
 class AlgoWindow:
     def __init__(self, name_f, contours_f, matrix_f):
@@ -71,16 +74,25 @@ class AlgoWindow:
         time_left = (now-self.start_time)/p*(1-p)
         self.progbar_txt['text'] = "{}% - {:.1f}s".format(int(p*100), time_left)
         self.progbar['value'] = p * 100
+        self.root.update()
 
     def calc_up(self, tup):
         if tup and self.keep_running: self.upprogressbar(tup[0])
         return self.keep_running
 
     def calculate(self):
+        A = np.array([
+            [3+2j, 0, 0],
+            [0, 1+1j, 0],
+            [0, 0, 4+3j]
+            ])
+        print(A.shape)
         self.contours_f(
             figure=self.figure,
-            matrix=self.matrix_f(), 
-            eps=[10**(-i) for i in range(7, 2, -1)], 
+            matrix=A,
+            # matrix=self.matrix_f(), 
+            # eps=[10**(-i) for i in range(7, 2, -1)], 
+            eps=[0.1], 
             step=0.02,
             update=partial(AlgoWindow.calc_up, self),
             progresstick=0.003
