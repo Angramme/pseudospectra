@@ -27,13 +27,6 @@ def start_algo():
 start_btn = tk.Button(root, text="Start!", command=start_algo)
 start_btn.pack(side=tk.BOTTOM)
 
-###
-def aftr():
-    algo_o.set("tracing")
-    start_algo()
-root.after(1, aftr)
-###
-
 def close():
     def __close():
         if win: win.stop()
