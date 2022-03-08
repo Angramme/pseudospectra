@@ -52,21 +52,19 @@ def trace_one(
 
     # find z_1
     EVs = np.linalg.eig(A)[0]
-    plot.scatter(EVs[0].real, EVs[0].imag, c="yellow")
-    # lam0 = np.random.choice(EVs)
-    # lam_mid = np.average(EVs)
 
-    d0 = 1j
-    # d0 = lam0-lam_mid
-    # d0 /= np.abs(d0)
+    plot.scatter(EVs[0].real, EVs[0].imag, c="yellow")
     
     lam0 = EVs[0]
+
+    d0 = 1j
+    # d0 = lam0-np.average(EVs)
+    # d0 /= np.abs(d0)
     
     theta1n = eps
     z1n = lam0 + theta1n*d0
     uz1n, gz1n, vhz1n = g(z1n)
     
-    print(uz1n, gz1n, vhz1n)
     print(abs(gz1n - eps)/eps, tol)
     while abs(gz1n - eps)/eps > tol:
         if not update((.1,)): return None
@@ -76,9 +74,9 @@ def trace_one(
         theta1n = -(gz1o-eps)/np.real(
             np.conj(d0)*np.vdot(vhz1o, uz1o)
             )
-        print("theta1n : {} | eps : {}".format(theta1n, eps))
+        # print("theta1n : {} | eps : {}".format(theta1n, eps))
         z1n = z1o + theta1n*d0
-        plot.scatter(z1n.real, z1n.imag, marker="+", c="green")
+        # plot.scatter(z1n.real, z1n.imag, marker="+", c="green")
 
         uz1n, gz1n, vhz1n = g(z1n)
 
