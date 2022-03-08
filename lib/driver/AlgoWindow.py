@@ -10,9 +10,7 @@ import time
 import threading
 from functools import partial
 
-from numpy import matrix
 import numpy as np
-
 
 class AlgoWindow:
     def __init__(self, name_f, contours_f, matrix_f):
@@ -86,13 +84,13 @@ class AlgoWindow:
             [0, 1+1j, 0],
             [0, 0, 4+3j]
             ])
-        print(A.shape)
+
         self.contours_f(
             figure=self.figure,
             matrix=A,
             # matrix=self.matrix_f(), 
             # eps=[10**(-i) for i in range(7, 2, -1)], 
-            eps=[0.1], 
+            eps=[0.1, 0.2, 0.3, 0.4], 
             step=0.02,
             update=partial(AlgoWindow.calc_up, self),
             progresstick=0.003
