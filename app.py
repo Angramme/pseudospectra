@@ -1,8 +1,9 @@
-from lib.matrix.matrix import matrice_top
+from lib.matrix.matrix import matrice_top, diagonal
 from lib.algo import list_algos, load_mod, rescan_algos
 
 import tkinter as tk
 from lib.driver.AlgoWindow import AlgoWindow
+import numpy as np
 
 
 
@@ -21,7 +22,8 @@ def start_algo():
     if win: win.close()
     name = algo_o.get()
     module = load_mod(name)
-    win = AlgoWindow(name, module.contours, lambda: matrice_top(64))
+    win = AlgoWindow(name, module.contours, lambda: diagonal([3+2j, 1+1j, 4+3j]))
+    # win = AlgoWindow(name, module.contours, lambda: matrice_top(64))
     win.start()
 
 start_btn = tk.Button(root, text="Start!", command=start_algo)

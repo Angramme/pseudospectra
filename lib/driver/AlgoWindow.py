@@ -79,16 +79,9 @@ class AlgoWindow:
         return self.keep_running
 
     def calculate(self):
-        A = np.array([
-            [3+2j, 0, 0],
-            [0, 1+1j, 0],
-            [0, 0, 4+3j]
-            ])
-
         self.contours_f(
             figure=self.figure,
-            matrix=A,
-            # matrix=self.matrix_f(), 
+            matrix=self.matrix_f(), 
             # eps=[10**(-i) for i in range(7, 2, -1)], 
             eps=[0.1, 0.2, 0.3, 0.4], 
             step=0.02,

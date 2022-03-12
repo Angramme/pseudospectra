@@ -26,7 +26,6 @@ def contours(
             eps=E, 
             tol=10e-5,
             update=up, 
-            progresstick=progresstick
             )
     
     return figure
@@ -37,10 +36,9 @@ def trace_one(
     eps: float, 
     tol: float,
     update = lambda: True, 
-    progresstick =.01,
     ):
     """
-    :param tol: relative accuracy of the first point
+    :param tol: float : relative accuracy of the first point
     """
 
     An = matrix.shape[0]
@@ -52,36 +50,63 @@ def trace_one(
 
     # find z_1
     EVs = np.linalg.eig(A)[0]
-
     plot.scatter(EVs[0].real, EVs[0].imag, c="yellow")
     
-    lam0 = EVs[0]
+    def find_z1():
+        lam0 = EVs[0]
+        d0 = 1j
 
-    d0 = 1j
-    # d0 = lam0-np.average(EVs)
-    # d0 /= np.abs(d0)
-    
-    theta1n = eps
-    z1n = lam0 + theta1n*d0
-    uz1n, gz1n, vhz1n = g(z1n)
-    
-    print(abs(gz1n - eps)/eps, tol)
-    while abs(gz1n - eps)/eps > tol:
-        if not update((.1,)): return None
-        z1o = z1n
-        uz1o, gz1o, vhz1o = uz1n, gz1n, vhz1n
-
-        theta1n = -(gz1o-eps)/np.real(
-            np.conj(d0)*np.vdot(vhz1o, uz1o)
-            )
-        # print("theta1n : {} | eps : {}".format(theta1n, eps))
-        z1n = z1o + theta1n*d0
-        # plot.scatter(z1n.real, z1n.imag, marker="+", c="green")
-
+        theta1n = eps
+        z1n = lam0 + theta1n*d0
         uz1n, gz1n, vhz1n = g(z1n)
+        while abs(gz1n - eps)/eps > tol:
+            if not update((.3*(abs(abs(gz1n - eps)/eps-tol)/tol),)): return None
+            z1o = z1n
+            uz1o, gz1o, vhz1o = uz1n, gz1n, vhz1n
 
-    z_1 = z1n
-    plot.scatter(z_1.real, z_1.imag, s=7**2, marker="x", c="red")
+            theta1n = -(gz1o-eps)/np.real(
+                np.conj(d0)*np.vdot(vhz1o, uz1o)
+                )
+            # print("theta1n : {} | eps : {}".format(theta1n, eps))
+            z1n = z1o + theta1n*d0
+            # plot.scatter(z1n.real, z1n.imag, marker="+", c="green")
 
-    update((.3,))
+            uz1n, gz1n, vhz1n = g(z1n)
+        return z1n, uz1n, gz1n, vhz1n
 
+    z_o, u_min_o, s_o, vh_min_o = find_z1()
+    z_og = z_o
+    if not update((.3,)): return None
+
+    plot.scatter(z_o.real, z_o.imag, s=7**2, marker="x", c="red")
+
+    boundary_x = []
+    boundary_y = []
+
+    prev_side = 0
+    switch_cnt = 0
+
+    for _ in range(65*3):
+        ## Prediction
+        r = 1j * np.vdot(vh_min_o, u_min_o) / np.abs(np.vdot(vh_min_o, u_min_o))
+        tau = eps*.03 # TODO: ?? find better tau lol
+        apx_z_n = z_o + tau*r
+
+        ## Correction
+        u_min_n, s_n, v_min_n = g(apx_z_n)
+        z_n = apx_z_n - (s_n-eps)/(np.vdot(u_min_n.conj(), v_min_n.conj()))
+
+        z_o, u_min_o, s_o, vh_min_o = z_n, u_min_n, s_n, v_min_n
+
+        # TODO: find a better stopping criterion
+        # if np.abs(z_og-z_o) < tau*.5: break
+        side = 1 if z_o-z_og > 0 else -1
+        if side != prev_side: switch_cnt += 1
+        prev_side = side 
+        if switch_cnt >= 3: break
+
+        boundary_x.append(z_n.real)
+        boundary_y.append(z_n.imag)
+        # plot.scatter(z_n.real, z_n.imag, s=7**2, marker="o", c="blue")
+
+    plot.plot(boundary_x, boundary_y, linestyle='-', color='blue')

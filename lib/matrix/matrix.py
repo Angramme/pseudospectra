@@ -24,3 +24,18 @@ def matrice_top(n):
             else:
                 res[i][j] = complex(0,0)
     return res
+
+def kohan(n, c, s):
+    return np.array(
+        [[1] + [-c]*(n-1)] +
+        [
+            [0]*(i) + [s**i] + [-(s**i) * c for _ in range(i+1, n)]
+            for i in range(1, n)
+        ])
+
+def diagonal(arr):
+    n = len(arr)
+    return np.array([
+        [0]*i + [arr[i]] + [0]*(n-i-1)
+        for i in range(n)
+    ])
