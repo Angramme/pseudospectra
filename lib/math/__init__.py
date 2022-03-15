@@ -9,4 +9,5 @@ def svd_min(A):
     # TODO: find a faster implementation
     u, s, v = np.linalg.svd(A)
     i = np.argmin(s)
-    return u[i, :], s[i], v[:, i]
+    # return u[i, :], s[i], v[:, i]
+    return u[:, i], s[i], v[i, :]

@@ -13,14 +13,16 @@ from functools import partial
 import numpy as np
 
 class AlgoWindow:
-    def __init__(self, name_f, contours_f, matrix_f):
+    def __init__(self, name_v, contours_f, matrix_v, eps_v, step_v):
         self.contours_f = contours_f
-        self.matrix_f = matrix_f
-        self.name_f = name_f
+        self.matrix_v = matrix_v
+        self.name_v = name_v
+        self.eps_v = eps_v
+        self.step_v = step_v
 
         self.root = tk.Toplevel()
         self.root.protocol("WM_DELETE_WINDOW", partial(AlgoWindow.close, self))
-        self.root.title("{} - pseudospectra".format(self.name_f))
+        self.root.title("{} - pseudospectra".format(self.name_v))
         wsize = int(min(self.root.winfo_screenmmwidth(), self.root.winfo_screenheight()))
         self.root.geometry("{}x{}".format(wsize, wsize))
 
@@ -46,6 +48,9 @@ class AlgoWindow:
 
         self.keep_running = True
         self.start_time = 0
+        self.end_time = 0
+
+        self._last_up = None
 
         self.calc_th = threading.Thread(target=partial(AlgoWindow.calculate, self))
 
@@ -55,9 +60,10 @@ class AlgoWindow:
 
     def stop(self):
         self.keep_running = False
-        print("please wait while {} terminates...".format(self.name_f))
+        print("please wait while {} terminates...".format(self.name_v))
         if self.start_time != 0: self.calc_th.join()
-        print("{} terminated!".format(self.name_f))
+        self.end_time = time.time()
+        print("{} terminated!".format(self.name_v))
 
     def close(self):
         def __close():
@@ -70,24 +76,32 @@ class AlgoWindow:
         if 'normal' != self.root.state(): return
         now = time.time()
         time_left = (now-self.start_time)/p*(1-p)
-        self.progbar_txt['text'] = "{}% - {:.1f}s".format(int(p*100), time_left)
+        self.progbar_txt['text'] = "{:.1f}% - {:.1f}s".format(int(p*100), time_left)
         self.progbar['value'] = p * 100
         self.root.update()
 
     def calc_up(self, tup):
+        ## limit gui update speed to 24 fps
+        now = time.time()
+        if self._last_up and now-self._last_up < 1/24: return self.keep_running
+        self._last_up = now
+
         if tup and self.keep_running: self.upprogressbar(tup[0])
         return self.keep_running
 
     def calculate(self):
         self.contours_f(
             figure=self.figure,
-            matrix=self.matrix_f(), 
-            # eps=[10**(-i) for i in range(7, 2, -1)], 
-            eps=[0.1, 0.2, 0.3, 0.4], 
-            step=0.02,
+            matrix=self.matrix_v, 
+            eps=self.eps_v, 
+            step=self.step_v,
             update=partial(AlgoWindow.calc_up, self),
             progresstick=0.003
             )
         if not self.keep_running: return
         self.canvas.draw()
         self.progbar.pack_forget()
+
+        self.end_time = time.time()
+        print("{} execution time was {}s".format(self.name_v, self.end_time - self.start_time))
+

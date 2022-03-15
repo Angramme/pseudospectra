@@ -25,6 +25,7 @@ def contours(
     epsmax = np.max(eps)
 
     for i in range(n):
+        if not update((0.01,)): return None
         a = A[i, i]
         rA = np.sum(np.abs(A[i])) - np.abs(A[i, i])
         # r = nsqrt * epsmax + rA
@@ -44,7 +45,7 @@ def contours(
     xv, yv = np.meshgrid(xx, yy)
 
     P_total = sigmin.shape[0]*sigmin.shape[1]
-    P_step  = round(P_total*progresstick)
+    P_step  = math.ceil(P_total*progresstick)
     P_stotal = P_total/P_step
     P_count = 0
     P_scount = 0
