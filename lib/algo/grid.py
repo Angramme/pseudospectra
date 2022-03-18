@@ -1,7 +1,7 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-from lib.math import ssvd_min
+from lib.math import gershgorin, ssvd_min
 
 
 def contours(
@@ -15,25 +15,11 @@ def contours(
     # 1 find the search grid area
     # 1.1 apply the extended Gershgorins Disc theorem to A to find all discs
     # 1.2 find the boudning rectangle
-    lb = +math.inf # left bound
-    rb = -math.inf # right bound
-    tb = -math.inf # top bound
-    bb = +math.inf # bottom bound
-
     A = matrix
     n, _ = A.shape
-    epsmax = np.max(eps)
-
-    for i in range(n):
-        if not update((0.01,)): return None
-        a = A[i, i]
-        rA = np.sum(np.abs(A[i])) - np.abs(A[i, i])
-        # r = nsqrt * epsmax + rA
-        r = n * epsmax + rA
-        lb = min(lb, a.real-r)
-        rb = max(rb, a.real+r)
-        bb = min(bb, a.imag-r)
-        tb = max(tb, a.imag+r)
+    
+    lb, rb, bb, tb = gershgorin(matrix, np.max(eps))
+    if not update((0.01,)): return None
         
     # 2 calculate sigmin grid     
     sigmin = np.zeros((
