@@ -69,7 +69,7 @@ class AlgoWindow:
         def __close():
             self.stop()
             self.root.destroy()
-        self.root.after(1, __close) # YES this is very needed for some reason!
+        self.root.after(80, __close) # YES this is very needed for some reason!
         # I guess because it runs the functions on this windows thread
     
     def upprogressbar(self, p):
