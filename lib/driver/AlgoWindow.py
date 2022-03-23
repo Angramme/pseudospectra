@@ -61,6 +61,9 @@ class AlgoWindow:
     def stop(self):
         self.keep_running = False
         print("please wait while {} terminates...".format(self.name_v))
+        self.wait()
+        
+    def wait(self):
         if self.start_time != 0: self.calc_th.join()
         self.end_time = time.time()
         print("{} terminated!".format(self.name_v))
