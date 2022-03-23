@@ -40,3 +40,54 @@ def gershgorin(A, eps):
         tb = max(tb, a.imag+r)
 
     return lb, rb, bb, tb
+
+
+class SegmentGrid():
+    def __init__(self, lb, rb, bb, tb, gs, max_eps_dist):
+        self.max_eps_dist = max_eps_dist
+
+        self.lb, self.rb, self.bb, self.tb = lb, rb, bb, tb
+        self.w, self.h = rb-lb, tb-bb
+        self.gs = gs
+        self.cw, self.ch = math.ceil(self.w/gs), math.ceil(self.h/gs)
+        
+        self.__grid = [[self.__make_cell() for y in range(self.ch)] for x in range(self.cw)]
+
+    def __check_cell(self, cell, z):
+        for B in cell:
+            # iterate over bound segments
+            for i in range(len(B)-1):
+                a = B[i]
+                b = B[i+1]
+                if segment_point_distance(a, b, z) < self.max_eps_dist: return True
+        return False
+
+    def __make_cell(cell):
+        return []
+
+    def get_cell_xy(self, z):
+        x = int((z.real - self.lb)/self.gs)
+        y = int((z.imag - self.bb)/self.gs)
+        x = max(0, min(x, self.cw-1))
+        y = max(0, min(y, self.ch-1))
+        return (x, y)
+
+    def get_cell(self, z):
+        i, j = self.get_cell_xy(z)
+        return self.__grid[i][j]
+
+    def is_segment(self, z):
+        cell = self.get_cell(z)
+        return self.__check_cell(cell, z)
+
+    def insert_segment(self, seg):
+        ccell = self.get_cell_xy(seg[0])
+        last_i = 0
+        for i in range(len(seg)-1):
+            a = seg[i]
+            b = seg[i+1]
+            ncell = self.get_cell_xy(b)
+            if ccell != ncell:
+                self.__grid[ccell[0]][ccell[1]].append(seg[last_i:i+1])
+                last_i = i
+                ccell = ncell
