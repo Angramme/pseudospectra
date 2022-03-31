@@ -1,7 +1,7 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-from lib.math import gershgorin, ssvd_min
+from lib.math import gershgorin_norm, ssvd_min
 
 
 def contours(
@@ -12,13 +12,14 @@ def contours(
     update = lambda: True, 
     progresstick =.01):
 
-    # 1 find the search grid area
-    # 1.1 apply the extended Gershgorins Disc theorem to A to find all discs
-    # 1.2 find the boudning rectangle
+    
     A = matrix
     n, _ = A.shape
     
-    lb, rb, bb, tb = gershgorin(matrix, np.max(eps))
+    # 1 find the search grid area
+    # 1.1 apply the extended gershgorins Disc theorem to A to find all discs
+    # 1.2 find the boudning rectangle
+    lb, rb, bb, tb = gershgorin_norm(matrix, np.max(eps))
     if not update((0.01,)): return None
         
     # 2 calculate sigmin grid     
@@ -37,7 +38,6 @@ def contours(
     P_scount = 0
     P_pprog = 0
 
-    print(sigmin.shape)
     for i, p in enumerate(xx):
         for j, q in enumerate(yy):
             sigmin[j, i] = ssvd_min((p+q*1j) * np.eye(n) -A)

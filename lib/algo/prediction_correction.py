@@ -1,6 +1,6 @@
 from functools import partial
 import numpy as np
-from lib.math import svd_min, segment_point_distance as segment_d, SegmentGrid, gershgorin
+from lib.math import svd_min, segment_point_distance as segment_d, SegmentGrid, gershgorin_norm
 from matplotlib.figure import Figure
 
 
@@ -21,18 +21,9 @@ def contours(
     # tau = step*min(eps)
     tau = step if step else 0.5*min(eps) 
 
-    lb, rb, bb, tb = gershgorin(matrix, np.max(eps))
+    lb, rb, bb, tb = gershgorin_norm(matrix, np.max(eps))
 
     for i, E in enumerate(eps):
-        # bounds = []
-        # def is_bound(z):
-        #     for B in bounds:
-        #         # iterate over bound segments
-        #         for i, a in enumerate(B):
-        #             b = B[(i+1)%len(B)]
-        #             if segment_d(a, b, z) < step: return True
-        #     return False
-
         sg = SegmentGrid(lb, rb, bb, tb, (rb-lb)/10, tau*3.)
         def is_bound(z):
             return sg.is_segment(z)
@@ -48,14 +39,12 @@ def contours(
                 matrix=matrix, 
                 eps=E, 
                 tol=1e-2,
-                # tau=0.01,
                 tau=tau,
                 lam0=Lam,
                 update=up, 
                 is_bound_f=is_bound
                 )
             if not isinstance(bound, list): return None
-            # if len(bound) > 0: bounds.append(bound)
             if len(bound) > 0: sg.insert_segment(bound)
     
     return figure

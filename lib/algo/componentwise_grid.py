@@ -1,7 +1,7 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-from lib.math import gershgorin, ssvd_min
+from lib.math import gershgorin_componentwise, ssvd_min
 
 
 def contours(
@@ -13,19 +13,14 @@ def contours(
     update = lambda: True, 
     progresstick =.01):
 
-    # 1 find the search grid area
-    # 1.1 apply the extended Gershgorins Disc theorem to A to find all discs
-    # 1.2 find the boudning rectangle
     A = matrix
     n, _ = A.shape
-
     if not E: E = np.ones((n, n))
-    # if not E: E = np.eye(n)
-
     assert(A.shape == E.shape)
     
-    # lb, rb, bb, tb = gershgorin(A, n*(3+np.sqrt(2))*np.max(eps))
-    lb, rb, bb, tb = -1, 2, -1, 2
+    # 1 find the search grid area
+    # 1.1 apply the extended gershgorins Disc theorem to A to find all discs
+    lb, rb, bb, tb = gershgorin_componentwise(A, E, n/((3+np.sqrt(2))*np.max(eps)))
     if not update((0.01,)): return None
         
     # 2 calculate grid 
@@ -44,10 +39,8 @@ def contours(
     P_scount = 0
     P_pprog = 0
 
-    print(grid.shape)
     for i, p in enumerate(xx):
         for j, q in enumerate(yy):
-            # grid[j, i] = ssvd_min((p+q*1j) * np.eye(n) -A)
             Al = A - (p+q*1j)*np.eye(n)
             Ali = np.linalg.inv(Al)
             X = np.abs(Ali)
@@ -69,7 +62,6 @@ def contours(
     P.set_aspect(1)
 
     P.contour(xv, yv, grid, levels=eps)
-    # P.contour(xv, yv, grid)
 
     # P.imshow(grid.T, extent=(lb, rb, bb, tb), cmap='hot', interpolation='nearest')
     

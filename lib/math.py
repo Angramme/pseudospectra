@@ -20,26 +20,41 @@ def segment_point_distance(a, b, z):
     projection = a + t * (b - a); 
     return np.abs(z - projection)
 
-def gershgorin(A, eps):
+def circles_to_bounds(iter):
     lb = +math.inf # left bound
     rb = -math.inf # right bound
     tb = -math.inf # top bound
     bb = +math.inf # bottom bound
 
+    for (center, radius) in iter:
+        lb = min(lb, center.real-radius)
+        rb = max(rb, center.real+radius)
+        bb = min(bb, center.imag-radius)
+        tb = max(tb, center.imag+radius)
+
+    return lb, rb, bb, tb
+
+
+def gershgorin_norm(A, eps):
     n, _ = A.shape
     sqrtn = np.sqrt(n)
 
-    for i in range(n):
+    def circ(i):
         a = A[i, i]
         rA = np.sum(np.abs(A[i])) - np.abs(A[i, i])
-        # r = nsqrt * eps + rA
         r = sqrtn * eps + rA
-        lb = min(lb, a.real-r)
-        rb = max(rb, a.real+r)
-        bb = min(bb, a.imag-r)
-        tb = max(tb, a.imag+r)
+        return (a, r)
+    return circles_to_bounds(map(circ, range(n)))
 
-    return lb, rb, bb, tb
+
+def gershgorin_componentwise(A, E, eps):
+    n, _ = A.shape
+    def circ(i):
+        a = A[i, i]
+        rA = np.sum(np.abs(A[i])) - np.abs(A[i, i])
+        r = rA + eps*np.sum(E[i])
+        return (a, r)
+    return circles_to_bounds(map(circ, range(n)))
 
 
 class SegmentGrid():
