@@ -25,11 +25,16 @@ def contours(
     print(lb, rb, bb, tb)
     print(math.ceil((rb-lb)/step), math.ceil((tb-bb)/step))
         
-    # 2 calculate sigmin grid     
-    sigmin = np.zeros((
-        math.ceil((rb-lb)/step), 
-        math.ceil((tb-bb)/step)))
-    
+    # 2 calculate sigmin grid
+    sigmin = None
+    try:
+        sigmin = np.zeros((
+            math.ceil((rb-lb)/step), 
+            math.ceil((tb-bb)/step)))
+    except:
+        print("Couldn't allocate the grid!")
+        return None
+
     xx = np.linspace(lb, rb, sigmin.shape[1])
     yy = np.linspace(bb, tb, sigmin.shape[0])
     xv, yv = np.meshgrid(xx, yy)

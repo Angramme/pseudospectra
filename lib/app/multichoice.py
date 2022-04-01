@@ -5,7 +5,7 @@ name_matrix_eps_step_quadruplets = {
     "random diagonal": (
     lambda s: diagonal(1*np.random.default_rng(4242).random(s) + 1j*np.random.default_rng(2424).random(s)),
     lambda s: [0.1*i for i in range(1, 5)],
-    lambda s: 0.01
+    lambda s: 0.025
     ),
     "pentadiagonal toeplitz": (
     lambda s: pentadiagonal_toeplitz(64),

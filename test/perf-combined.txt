@@ -1,0 +1,35 @@
+random diagonal	
+prediction_correction	5	0.29721593856811523	
+prediction_correction	10	0.36596226692199707	
+prediction_correction	15	0.4774754047393799	
+prediction_correction	20	0.5779998302459717	
+prediction_correction	25	0.7096238136291504	
+kahan	
+prediction_correction	5	0.25199007987976074	
+prediction_correction	10	0.4629995822906494	
+prediction_correction	15	2.739473342895508	
+prediction_correction	20	12.938324689865112	
+prediction_correction	25	140.90286016464233	
+random diagonal	
+componentwise_grid	5	5.886864185333252	
+componentwise_grid	10	20.656642198562622	
+componentwise_grid	15	22.074968099594116	
+componentwise_grid	20	29.8259699344635	
+componentwise_grid	25	45.75755572319031	
+kahan	
+componentwise_grid	5	4.311599016189575	
+componentwise_grid	10	82.10413599014282	
+componentwise_grid	15	20.429882526397705	
+componentwise_grid	20	50.17886519432068	
+random diagonal	
+grid	5	2.0005710124969482	
+grid	10	5.929927587509155	
+grid	15	11.24494457244873	
+grid	20	17.70814847946167	
+grid	25	22.678346395492554	
+kahan	
+grid	5	2.0293521881103516	
+grid	10	23.46817684173584	
+grid	15	296.7156207561493	
+grid	20	51.4111590385437	
+grid	25	261.90130615234375	

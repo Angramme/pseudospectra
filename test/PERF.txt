@@ -1,0 +1,32 @@
+grid :
+size : 10 ; time : 8.055881261825562s
+size : 20 ; time : 19.280818462371826s
+size : 30 ; time : 35.60422325134277s
+size : 40 ; time : 60.69512724876404s
+tracing sans protection de redondance :
+size : 10 ; time : 3.1538538932800293s
+size : 20 ; time : 7.669344663619995s
+size : 30 ; time : 11.9783616065979s
+size : 40 ; time : 30.572097539901733s
+
+grid :
+size : 10 ; time : 8.291914939880371s
+size : 20 ; time : 19.32237935066223s
+size : 30 ; time : 35.80348491668701s
+size : 40 ; time : 63.01738095283508s
+tracing avec bound array :
+size : 10 ; time : 1.515815258026123s
+size : 20 ; time : 2.9894866943359375s
+size : 30 ; time : 2.771249294281006s
+size : 40 ; time : 10.768478870391846s
+
+grid :
+size : 10 ; time : 8.152785778045654s
+size : 20 ; time : 19.472630262374878s
+size : 30 ; time : 36.05101251602173s
+size : 40 ; time : 62.4498827457428s
+tracing avec SegmentGrid
+size : 10 ; time : 1.4402050971984863s
+size : 20 ; time : 3.2602431774139404s
+size : 30 ; time : 2.6649184226989746s
+size : 40 ; time : 11.754014730453491s

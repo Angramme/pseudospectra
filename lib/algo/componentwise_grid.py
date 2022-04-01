@@ -28,10 +28,16 @@ def contours(
     print(math.ceil((rb-lb)/step), math.ceil((tb-bb)/step))
         
     # 2 calculate grid 
-    grid = np.zeros((
-        math.ceil((rb-lb)/step), 
-        math.ceil((tb-bb)/step)))
-    
+    grid = None
+    try:
+        grid = np.zeros((
+            math.ceil((rb-lb)/step), 
+            math.ceil((tb-bb)/step)))
+    except:
+        print("Warning couldn't allocate the grid! ")
+        return None
+
+
     xx = np.linspace(lb, rb, grid.shape[1])
     yy = np.linspace(bb, tb, grid.shape[0])
     xv, yv = np.meshgrid(xx, yy)
