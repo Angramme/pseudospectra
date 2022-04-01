@@ -15,13 +15,17 @@ def contours(
 
     A = matrix
     n, _ = A.shape
-    if not E: E = np.ones((n, n))
+    if not E: E = 1/(4*n**2) * np.ones((n, n))
     assert(A.shape == E.shape)
     
     # 1 find the search grid area
     # 1.1 apply the extended gershgorins Disc theorem to A to find all discs
-    lb, rb, bb, tb = gershgorin_componentwise(A, E, n/((3+np.sqrt(2))*np.max(eps)))
+    lb, rb, bb, tb = gershgorin_componentwise(A, E, np.max(eps)*((3+np.sqrt(2))*n))
+    # lb, rb, bb, tb = gershgorin_componentwise(A, E, np.max(eps))
     if not update((0.01,)): return None
+
+    print(lb, rb, bb, tb)
+    print(math.ceil((rb-lb)/step), math.ceil((tb-bb)/step))
         
     # 2 calculate grid 
     grid = np.zeros((

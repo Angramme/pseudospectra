@@ -21,6 +21,9 @@ def contours(
     # 1.2 find the boudning rectangle
     lb, rb, bb, tb = gershgorin_norm(matrix, np.max(eps))
     if not update((0.01,)): return None
+
+    print(lb, rb, bb, tb)
+    print(math.ceil((rb-lb)/step), math.ceil((tb-bb)/step))
         
     # 2 calculate sigmin grid     
     sigmin = np.zeros((

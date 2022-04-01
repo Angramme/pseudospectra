@@ -1,31 +1,37 @@
 import numpy as np
 
-def matrice_top(n):
-    # fonction qui n'est pas a moi...
-    a = complex(0,0)
-    b = complex(0,0)
-    c = complex(1/2,1/8)
-    d = complex(1,0)
-    e = complex(0,0)
-    res = np.zeros((n, n), np.complex_)
-    # res = [[0 for j in range(n)]for i in range(n)]
+
+def pentadiagonal_toeplitz(n, 
+    x = 0+0j, 
+    y = 0+0j, 
+    z = 0.5+(1/8)*1j, 
+    v = 1+0j, 
+    w = 0+0j
+    ):
+    res = np.array([[0+0j for j in range(n)]for i in range(n)])
     for i in range(n) : 
-        for j in range(n) : 
+        for j in range(n): 
             if(i==j ):
-                res[i][j] = a
+                res[i][j] = x
             elif(i == j-1):
-                res[i][j] = b
+                res[i][j] = y			
             elif(i == j+1):
-                res[i][j] = c
+                res[i][j] = z
             elif(i == j-2):
-                res[i][j] = d
+                res[i][j] = v
             elif(i==j+2):
-                res[i][j] = e
+                res[i][j] = w
             else:
                 res[i][j] = complex(0,0)
     return res
 
-def kohan(n, c, s):
+    V = [w, z, x, y, v]
+    return np.array([
+        [(V[j-i + 2] if 0<= j-i + 2 <5 else 0+0j) for j in range(n)]
+        for i in range(n)
+    ])
+
+def kahan(n, c, s):
     return np.array(
         [[1] + [-c]*(n-1)] +
         [

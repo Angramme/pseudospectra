@@ -1,21 +1,24 @@
-from lib.matrix import matrice_top, diagonal, kohan
 from lib.algo import list_algos, load_mod, rescan_algos
+import lib.app.multichoice as MC
 
+import importlib
 import tkinter as tk
 from lib.driver.AlgoWindow import AlgoWindow
-import numpy as np
-import random
-
 
 root = tk.Tk()
 root.title("Pseudospectra")
 
 algos = list_algos()
 algo_o = tk.StringVar(root)
-# algo_o.set(algos[0])
 algo_o.set("componentwise_grid")
 algo_chs = tk.OptionMenu(root, algo_o, *algos)
 algo_chs.pack(side=tk.TOP)
+
+matnames = MC.name_matrix_eps_step_quadruplets.keys()
+matnames_o = tk.StringVar(root)
+matnames_o.set("random diagonal")
+matnames_chs = tk.OptionMenu(root, matnames_o, *matnames)
+matnames_chs.pack(side=tk.TOP)
 
 win = None
 def start_algo():
@@ -23,20 +26,22 @@ def start_algo():
     if win: win.close()
     name = algo_o.get()
     module = load_mod(name)
-    # matrix = matrice_top(64)
-    # matrix = diagonal([2+1.31415j, 1+1j, 3+2j])
-    matrix = diagonal(np.random.default_rng(4242).random(10) + 1j*np.random.default_rng(2424).random(10))
-    # matrix = kohan(10, 1.5+1.1j, 1.2+.3j)
+    matname = matnames_o.get()
+    importlib.reload(MC)
+    mattrip = MC.name_matrix_eps_step_quadruplets[matname]
+    
+    size = 9
+    matrix = mattrip[0](size)
+    eps = mattrip[1](size)
+    step = mattrip[2](size)
+
     print(matrix)
     win = AlgoWindow(
         name_v=name, 
         contours_f=module.contours, 
         matrix_v=matrix,
-        # eps_v=[10**(-i) for i in range(7, 2, -1)], 
-        # eps_v=[0.1*i for i in range(1, 5)],
-        eps_v=[3*i for i in range(1, 15)],
-        step_v=0.025,
-        # step_v=0.1,
+        eps_v=eps,
+        step_v=step,
         )
     win.start()
 
