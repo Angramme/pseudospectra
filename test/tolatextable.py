@@ -21,7 +21,7 @@ def parsefile(filename):
 
     return obj
 
-def tolatextable(obj):
+def tolatextable(obj, algs_p=None):
     ret = ""
 
     mats = list(obj.keys())
@@ -34,7 +34,7 @@ def tolatextable(obj):
             algs |= y.keys()
 
     sizes = list(map(str, sorted(list(map(int, sizes)))))
-    algs = ["grid", "prediction_correction"]
+    if algs_p: algs = algs_p
 
     for mat in mats:
         ret += f"\n\n Matrix: {mat} \n\n"
@@ -55,7 +55,55 @@ def tolatextable(obj):
 
     return ret
 
+def tolatextikzgraph(obj, algs_p=None):
+    ret = ""
+
+    mats = list(obj.keys())
+    algs = set()
+    sizes = set()
+    colors = ["red", "blue", "green", "yellow", "purple"]
+
+    for x in obj.values():
+        sizes |= x.keys()
+        for y in x.values():
+            algs |= y.keys()
+
+    sizes = list(map(str, sorted(list(map(int, sizes)))))
+    if algs_p: algs = algs_p
+
+    for mat in mats:
+        ret += f'''
+\\begin{{tikzpicture}}
+    \\begin{{axis}}[
+        title={{Execution times comparaison for {mat} matrix}},
+        xlabel={{size of the matrix}},
+        ylabel={{execution time in seconds}},
+        legend pos=north west,
+        ymajorgrids=true,
+        grid style=dashed,
+    ]\n\n
+        '''
+
+        for alg_i, alg in enumerate(algs):
+            ret += f'''
+\\addplot[
+    color={colors[alg_i]},
+    mark=square,
+    ]
+    coordinates {{{
+    "".join([f"({size},{obj[mat][size][alg]})" if alg in obj[mat][size] else "" for size in sizes])
+    }}};
+    \\addlegendentry{{{alg.replace("_", "-")}}};
+    \n
+            '''
+        ret += '''
+\end{axis}
+\end{tikzpicture}
+        '''
+
+    return ret
+
 
 if __name__ == "__main__":
     obj = parsefile("./test/perf-combined.txt")
-    print(tolatextable(obj))
+    print(tolatextikzgraph(obj, ["grid", "prediction_correction", "componentwise_grid"]))
