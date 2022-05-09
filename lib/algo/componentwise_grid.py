@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from lib.math import gershgorin_componentwise, ssvd_min
 
 
-def contours(
+def main(
     figure, 
     matrix: np.matrix, 
     eps: np.array, 
@@ -15,12 +15,13 @@ def contours(
 
     A = matrix
     n, _ = A.shape
-    if not E: E = 1/(4*n**2) * np.ones((n, n))
+    if not E: E = 1/n * np.ones((n, n))
     assert(A.shape == E.shape)
     
     # 1 find the search grid area
     # 1.1 apply the extended gershgorins Disc theorem to A to find all discs
-    lb, rb, bb, tb = gershgorin_componentwise(A, E, np.max(eps)*((3+np.sqrt(2))*n))
+    # lb, rb, bb, tb = gershgorin_componentwise(A, E, np.max(eps)/((3+np.sqrt(2))*n))
+    lb, rb, bb, tb = gershgorin_componentwise(A, E, np.max(eps))
     # lb, rb, bb, tb = gershgorin_componentwise(A, E, np.max(eps))
     if not update((0.01,)): return None
 
@@ -57,7 +58,7 @@ def contours(
             Y = np.matmul(X, E)
             P = np.max(np.abs(np.linalg.eigvals(Y)))
 
-            grid[j, i] = P
+            grid[j, i] = 1/P
 
             # progress updates
             P_count += 1

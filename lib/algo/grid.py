@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from lib.math import gershgorin_norm, ssvd_min
 
 
-def contours(
+def main(
     figure, 
     matrix: np.matrix, 
     eps: np.array, 

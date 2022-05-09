@@ -13,12 +13,13 @@ from functools import partial
 import numpy as np
 
 class AlgoWindow:
-    def __init__(self, name_v, contours_f, matrix_v, eps_v, step_v):
-        self.contours_f = contours_f
+    def __init__(self, name_v, main_f, matrix_v, eps_v, step_v, onclose_f=lambda:None):
+        self.main_f = main_f
         self.matrix_v = matrix_v
         self.name_v = name_v
         self.eps_v = eps_v
         self.step_v = step_v
+        self.onclose_f = onclose_f
 
         self.root = tk.Toplevel()
         self.root.protocol("WM_DELETE_WINDOW", partial(AlgoWindow.close, self))
@@ -74,6 +75,7 @@ class AlgoWindow:
             self.root.destroy()
         self.root.after(80, __close) # YES this is very needed for some reason!
         # I guess because it runs the functions on this windows thread
+        self.onclose_f()
     
     def upprogressbar(self, p):
         if 'normal' != self.root.state(): return
@@ -93,7 +95,7 @@ class AlgoWindow:
         return self.keep_running
 
     def calculate(self):
-        self.contours_f(
+        self.main_f(
             figure=self.figure,
             matrix=self.matrix_v, 
             eps=self.eps_v, 

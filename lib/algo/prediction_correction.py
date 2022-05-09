@@ -4,7 +4,7 @@ from lib.math import svd_min, segment_point_distance as segment_d, SegmentGrid, 
 from matplotlib.figure import Figure
 
 
-def contours(
+def main(
     figure: Figure, 
     matrix: np.matrix, 
     eps: np.array, 
