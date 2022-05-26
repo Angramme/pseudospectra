@@ -95,8 +95,10 @@ class AlgoWindow:
         return self.keep_running
 
     def calculate(self):
+        plot = self.figure.add_subplot()
+        plot.set_aspect(1)
         self.main_f(
-            figure=self.figure,
+            plot=plot,
             matrix=self.matrix_v, 
             eps=self.eps_v, 
             step=self.step_v,

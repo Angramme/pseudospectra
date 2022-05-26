@@ -5,7 +5,7 @@ from lib.math import gershgorin_componentwise, ssvd_min
 
 
 def main(
-    figure, 
+    plot, 
     matrix: np.matrix, 
     eps: np.array, 
     E: np.matrix = None,
@@ -68,9 +68,7 @@ def main(
                 if not update((prog,)): return None
                 P_pprog = prog
 
-    F = figure
-    P = F.add_subplot()
-    P.set_aspect(1)
+    P = plot
 
     P.contour(xv, yv, grid, levels=eps)
 
@@ -81,5 +79,3 @@ def main(
     
     Re = plt.Rectangle((lb, bb), rb-lb, tb-bb, alpha=1, facecolor='none', edgecolor='red')
     P.add_patch(Re)
-
-    return F

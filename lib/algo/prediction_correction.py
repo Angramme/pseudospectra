@@ -1,19 +1,17 @@
 from functools import partial
 import numpy as np
 from lib.math import svd_min, segment_point_distance as segment_d, SegmentGrid, gershgorin_norm
-from matplotlib.figure import Figure
 
 
 def main(
-    figure: Figure, 
+    plot, 
     matrix: np.matrix, 
     eps: np.array, 
     step: float, 
     update = lambda: True, 
     progresstick = .01):
 
-    P = figure.add_subplot()
-    P.set_aspect(1)
+    P = plot
 
     EVs = np.linalg.eig(matrix)[0]
     P.scatter(EVs.real, EVs.imag, c="green")
@@ -46,8 +44,6 @@ def main(
                 )
             if not isinstance(bound, list): return None
             if len(bound) > 0: sg.insert_segment(bound)
-    
-    return figure
 
 def trace_one(
     plot, 
