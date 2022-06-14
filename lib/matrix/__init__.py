@@ -48,6 +48,6 @@ def diagonal(arr: "list[complex]"):
 def diagonal_jordan(n: "int"):
     # mutliplicite de Jordan
     return np.array([
-        [0]*i + [-0.05*i + i*1j] + [1*np.log(1.7+.5*i)]*min(1, n-i-1) + [0]*max(0, n-i-2)
+        [0]*i + [-0.08*i + i*1j] + [1*np.log(1.7+.6*i)]*min(1, n-i-1) + [0]*max(0, n-i-2)
         for i in range(n)
     ])

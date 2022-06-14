@@ -129,6 +129,7 @@ class App(tk.Tk):
         self.wins[-1].stop()
         self.wins[-1].close()
         self.start_algo()
+        self.winpos = None
 
     def load_defaults(self):
         matname = self.matnames_o.get()
