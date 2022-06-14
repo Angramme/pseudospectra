@@ -1,12 +1,11 @@
 import numpy as np
 
-
-def pentadiagonal_toeplitz(n, 
-    x = 0+0j, 
-    y = 0+0j, 
-    z = 0.5+(1/8)*1j, 
-    v = 1+0j, 
-    w = 0+0j
+def pentadiagonal_toeplitz(n: "int", 
+    x: "complex" = 0+0j, 
+    y: "complex" = 0+0j, 
+    z: "complex" = 0.5+(1/8)*1j, 
+    v: "complex" = 1+0j, 
+    w: "complex" = 0+0j
     ):
     res = np.array([[0+0j for j in range(n)]for i in range(n)])
     for i in range(n) : 
@@ -31,7 +30,8 @@ def pentadiagonal_toeplitz(n,
         for i in range(n)
     ])
 
-def kahan(n, c, s):
+def kahan(n: "int", c: "complex", s: "complex"):
+    print("kahan", n, c, s)
     return np.array(
         [[1] + [-c]*(n-1)] +
         [
@@ -39,14 +39,14 @@ def kahan(n, c, s):
             for i in range(1, n)
         ])
 
-def diagonal(arr):
+def diagonal(arr: "list[complex]"):
     n = len(arr)
     return np.array([
         [0]*i + [arr[i]] + [0]*(n-i-1)
         for i in range(n)
     ])
 
-def diagonal_jordan(n):
+def diagonal_jordan(n: "int"):
     # mutliplicite de Jordan
     return np.array([
         [0]*i + [-0.05*i + i*1j] + [1*np.log(1.7+.5*i)]*min(1, n-i-1) + [0]*max(0, n-i-2)

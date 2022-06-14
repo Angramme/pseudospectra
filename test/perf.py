@@ -4,7 +4,7 @@ import threading as Th
 
 import time
 import tkinter as tk
-from lib.driver.AlgoWindow import AlgoWindow
+from lib.app.AlgoWindow import AlgoWindow
 import numpy as np
 
 def multisize_timealg(
@@ -33,10 +33,13 @@ def multisize_timealg(
 def timealg(name, module, matrix, eps, step):
     win = AlgoWindow(
         name_v=name, 
-        contours_f=module.contours, 
-        matrix_v=matrix,
-        eps_v=eps,
-        step_v=step,
+        main_f=module.main, 
+        main_args_v={
+            "matrix": matrix,
+            "step": step,
+            "eps": eps,
+        },
+        initplot_f=module.init_figure if hasattr(module, 'init_figure') else None,
         )
     win.start()
     win.wait()
@@ -75,7 +78,7 @@ def all_multimatrix_multisize_timealg(
     log_f=print
     ):
     # algos = list_algos()
-    algos = ["grid"]
+    algos = ["grid", "prediction_correction", "criss_cross_pabscissa", "criss_cross_pradius", "componentswise_grid"]
     times = dict()
 
     for name in algos:

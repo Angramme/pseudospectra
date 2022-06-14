@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from tkinter.ttk import Progressbar
 from matplotlib.figure import Figure
 
@@ -13,22 +14,27 @@ from functools import partial
 import numpy as np
 
 class AlgoWindow:
-    def __init__(self, name_v, main_f, matrix_v, eps_v, step_v, onclose_f=lambda:None):
+    def __init__(self, name_v, main_f, main_args_v, onclose_f=lambda:None, initplot_f=None, startwinpos_v=None):
         self.main_f = main_f
-        self.matrix_v = matrix_v
         self.name_v = name_v
-        self.eps_v = eps_v
-        self.step_v = step_v
+        self.main_args_v = main_args_v
+        # self.matrix_v = matrix_v
+        # self.eps_v = eps_v
+        # self.step_v = step_v
         self.onclose_f = onclose_f
+        self.initplot_f = initplot_f
 
         self.root = tk.Toplevel()
+        if startwinpos_v:
+            (win_x, win_y) = startwinpos_v
+            self.root.after(50, lambda: self.root.geometry(f'+{win_x}+{win_y}'))
         self.root.protocol("WM_DELETE_WINDOW", partial(AlgoWindow.close, self))
         self.root.title("{} - pseudospectra".format(self.name_v))
         wsize = int(min(self.root.winfo_screenmmwidth(), self.root.winfo_screenheight()))
         self.root.geometry("{}x{}".format(wsize, wsize))
 
         self.progbar = Progressbar(self.root, orient=tk.HORIZONTAL, mode='determinate')
-        self.progbar_txt = tk.Label(master=self.progbar, background=None)
+        self.progbar_txt = ttk.Label(master=self.progbar, background=None)
         self.progbar_txt.pack(side=tk.BOTTOM)
 
         self.figure = Figure(dpi=100)
@@ -95,15 +101,19 @@ class AlgoWindow:
         return self.keep_running
 
     def calculate(self):
-        plot = self.figure.add_subplot()
-        plot.set_aspect(1)
+        if not self.initplot_f:
+            plot = self.figure.add_subplot()
+            plot.set_aspect(1)
+        else: plot = self.initplot_f(self.figure)
+
         self.main_f(
             plot=plot,
-            matrix=self.matrix_v, 
-            eps=self.eps_v, 
-            step=self.step_v,
             update=partial(AlgoWindow.calc_up, self),
-            progresstick=0.003
+            progresstick=0.003,
+            **self.main_args_v,
+            # matrix=self.matrix_v, 
+            # eps=self.eps_v, 
+            # step=self.step_v,
             )
         if not self.keep_running: return
         self.canvas.draw()
@@ -111,4 +121,7 @@ class AlgoWindow:
 
         self.end_time = time.time()
         print("{} execution time was {}s".format(self.name_v, self.end_time - self.start_time))
+
+    def get_win_position(self):
+        return (self.root.winfo_rootx(), self.root.winfo_rooty())
 
