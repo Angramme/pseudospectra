@@ -14,6 +14,8 @@ def main(
     eps: np.array, 
     step: float =0.5, 
     update = lambda: True, 
+    rstride = None,
+    cstride = None,
     progresstick =.01):
 
     
@@ -62,7 +64,10 @@ def main(
                 P_pprog = prog
 
     P = plot
-    P.plot_surface(xv, yv, 1/sigmin, cmap=cm.coolwarm, linewidth=0)
+    strides = {}
+    if rstride: strides["rstride"] = rstride
+    if cstride: strides["cstride"] = cstride
+    P.plot_surface(xv, yv, 1/sigmin, cmap=cm.coolwarm, linewidth=0, **strides)
     # plt.title('z as 3d height map')    
     # Re = plt.Rectangle((lb, bb), rb-lb, tb-bb, alpha=1, facecolor='none', edgecolor='red')
     # P.add_patch(Re)

@@ -3,7 +3,6 @@ from lib.algo import list_algos, load_mod, rescan_algos
 from lib.algo.grid3D import init_figure
 import lib.app.defaults as app_defaults
 
-import importlib
 import tkinter as tk
 from tkinter import ttk
 from lib.app.AlgoWindow import AlgoWindow
@@ -101,6 +100,9 @@ class App(tk.Tk):
         for (_, entry, nm, util) in self.additional_matrix_settings:
             additional_matrix[nm] = util["parse"](entry.get())
         matrix = mat_defaults["func"](size, **additional_matrix)
+        additional_algorithm = {}
+        for (_, entry, nm, util) in self.additional_algorithm_settings:
+            additional_algorithm[nm] = util["parse"](entry.get())
 
 
         def onclose():
@@ -112,6 +114,7 @@ class App(tk.Tk):
                 "matrix": matrix,
                 "step": step,
                 "eps": eps,
+                **additional_algorithm,
             },
             onclose_f=onclose,
             initplot_f=module.init_figure if hasattr(module, 'init_figure') else None,
@@ -170,8 +173,6 @@ class App(tk.Tk):
         ret.pack(side=tk.TOP, fill=tk.X, padx=5, pady=5)
         label.pack(side=tk.LEFT)
         entry.pack(side=tk.RIGHT, fill=tk.X, expand=True)
-        # label.grid(row=0, column=0)
-        # entry.grid(row=0, column=1, columnspan=2)
         return (ret, entry)
 
     def show_matrix(self):
@@ -188,7 +189,10 @@ class App(tk.Tk):
 
         win = tk.Toplevel(self)
         win.title(f"matrix {matname}")
+        mxabs = max([max(abs(x)) for x in matrix])
         for y, line in enumerate(matrix):
             for x, cell in enumerate(line):
-                lab = ttk.Label(win, text=f"{cell:.2f}", width=cellw, borderwidth=1, relief=tk.RIDGE, background="silver" if cell==0 else None)
+                scale = abs(cell)/mxabs
+                color = "silver" if cell==0 else f"#{int(scale*255):2x}aadd"
+                lab = ttk.Label(win, text=f"{cell:.2f}", width=cellw, borderwidth=1, relief=tk.RIDGE, background=color)
                 lab.grid(row=y, column=x)

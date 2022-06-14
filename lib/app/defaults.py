@@ -71,6 +71,17 @@ algorithm_additional = {
     "criss_cross_pabscissa":{},
     "cris_cros_pradius":{},
     "grid":{},
-    "grid3D":{},
+    "grid3D":{
+        "rstride": {
+            "default": None,
+            "serialize": lambda x: str(x) if x else "_",
+            "parse": lambda x: int(x) if x != "_" else None,
+        },
+        "cstride": {
+            "default": None,
+            "serialize": lambda x: str(x) if x else "_",
+            "parse": lambda x: int(x) if x != "_" else None,
+        },
+    },
     "prediction_correction":{},
 }
