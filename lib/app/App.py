@@ -22,7 +22,7 @@ class App(tk.Tk):
         if theme in style.theme_names(): style.theme_use(theme)
 
         grid = ttk.Frame(self, relief=tk.FLAT)
-        grid.pack(side=tk.TOP)
+        grid.pack(side=tk.TOP, padx=10, fill=tk.X)
 
         algos_label = ttk.Label(grid, text="algorithm: ")
         algos_label.grid(row=0, column=0, sticky="E")
@@ -43,19 +43,23 @@ class App(tk.Tk):
         matrix_settings_label = ttk.Label(self, text="matrix settings: ", justify=tk.CENTER, background="silver")
         matrix_settings_label.pack(side=tk.TOP, pady=5)
         self.matrix_settings = ttk.Frame(self, relief=tk.FLAT)
-        self.matrix_settings.pack(side=tk.TOP, pady=5)
+        self.matrix_settings.pack(side=tk.TOP, pady=5, padx=10, fill=tk.X)
 
-        algorithm_settings_label = ttk.Label(self, text="matrix settings: ", justify=tk.CENTER, background="silver")
+        algorithm_settings_label = ttk.Label(self, text="algorithm settings: ", justify=tk.CENTER, background="silver")
         algorithm_settings_label.pack(side=tk.TOP, pady=5)
         self.algorithm_settings = ttk.Frame(self, relief=tk.FLAT)
-        self.algorithm_settings.pack(side=tk.TOP, pady=5)
+        self.algorithm_settings.pack(side=tk.TOP, pady=5, padx=10, fill=tk.X)
 
-        _, self.n_entry = self.make_setting(self.matrix_settings, "n")
-        _, self.step_entry = self.make_setting(self.algorithm_settings, "step")
-        _, self.eps_entry = self.make_setting(self.algorithm_settings, "epsilon") 
+        _, self.n_entry = self.make_setting(self.matrix_settings, "size (n)")
+        _, self.step_entry = self.make_setting(self.algorithm_settings, "step (τ)")
+        _, self.eps_entry = self.make_setting(self.algorithm_settings, "epsilon (ε)") 
 
         load_defaults_button = ttk.Button(self, text="use defaults of matrix", command=self.load_defaults)
         load_defaults_button.pack(side=tk.TOP)
+
+        show_matrix_btn = ttk.Button(self, text="show matrix", command=self.show_matrix)
+        show_matrix_btn.pack(side=tk.TOP)
+
 
         self.additional_matrix_settings = []
         self.matnames_o.trace_add("write", self.update_additional_matrix_settings)   
@@ -139,9 +143,9 @@ class App(tk.Tk):
             row.pack_forget()
         self.additional_matrix_settings = []
         
-        algname = self.algo_o.get()
-        for (k, v) in app_defaults.matrix_additional[algname].items():
-            p = self.make_setting(self.algorithm_settings, k)
+        matname = self.matnames_o.get()
+        for (k, v) in app_defaults.matrix_additional[matname].items():
+            p = self.make_setting(self.matrix_settings, k)
             p[1].delete(0, tk.END)
             p[1].insert(0, v["serialize"](v["default"]))
             self.additional_matrix_settings.append((*p, k, v))
@@ -151,9 +155,9 @@ class App(tk.Tk):
             row.pack_forget()
         self.additional_algorithm_settings = []
 
-        matname = self.matnames_o.get()
-        for (k, v) in app_defaults.algorithm_additional[matname].items():
-            p = self.make_setting(self.matrix_settings, k)
+        algname = self.algo_o.get()
+        for (k, v) in app_defaults.algorithm_additional[algname].items():
+            p = self.make_setting(self.algorithm_settings, k)
             p[1].delete(0, tk.END)
             p[1].insert(0, v["serialize"](v["default"]))
             self.additional_algorithm_settings.append((*p, k, v))
@@ -161,9 +165,30 @@ class App(tk.Tk):
 
     def make_setting(self, master, name):
         ret = ttk.Frame(master=master, relief=tk.FLAT)
-        label = ttk.Label(ret, text=name+": ", width=7, anchor='e')
+        label = ttk.Label(ret, text=name+": ", width=11, anchor='e')
         entry = ttk.Entry(ret)
         ret.pack(side=tk.TOP, fill=tk.X, padx=5, pady=5)
-        label.grid(row=0, column=0)
-        entry.grid(row=0, column=1, columnspan=2)
+        label.pack(side=tk.LEFT)
+        entry.pack(side=tk.RIGHT, fill=tk.X, expand=True)
+        # label.grid(row=0, column=0)
+        # entry.grid(row=0, column=1, columnspan=2)
         return (ret, entry)
+
+    def show_matrix(self):
+        matname = self.matnames_o.get()
+        mat_defaults = app_defaults.matrix_associated[matname]
+
+        size = int(self.n_entry.get())
+        additional_matrix = {}
+        for (_, entry, nm, util) in self.additional_matrix_settings:
+            additional_matrix[nm] = util["parse"](entry.get())
+        matrix = mat_defaults["func"](size, **additional_matrix)
+
+        cellw = 14
+
+        win = tk.Toplevel(self)
+        win.title(f"matrix {matname}")
+        for y, line in enumerate(matrix):
+            for x, cell in enumerate(line):
+                lab = ttk.Label(win, text=f"{cell:.2f}", width=cellw, borderwidth=1, relief=tk.RIDGE, background="silver" if cell==0 else None)
+                lab.grid(row=y, column=x)

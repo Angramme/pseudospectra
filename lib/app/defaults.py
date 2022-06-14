@@ -17,7 +17,7 @@ matrix_associated = {
         "func": lambda _, arr: diagonal(arr),
         "eps": [0.5],
         "step": 0.025,
-        "n": 9,
+        "n": 0,
     },
     "pentadiagonal toeplitz": {
         "func": pentadiagonal_toeplitz,

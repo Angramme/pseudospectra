@@ -31,7 +31,6 @@ def pentadiagonal_toeplitz(n: "int",
     ])
 
 def kahan(n: "int", c: "complex", s: "complex"):
-    print("kahan", n, c, s)
     return np.array(
         [[1] + [-c]*(n-1)] +
         [
