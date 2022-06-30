@@ -95,7 +95,9 @@ class App(tk.Tk):
         mat_defaults = app_defaults.matrix_associated[matname]
 
         size = int(self.n_entry.get())
-        eps = [float(self.eps_entry.get())]
+        # eps = [float(self.eps_entry.get())]
+        eps = [float(x) for x in self.eps_entry.get().split(",")]
+        eps.sort()
         step = float(self.step_entry.get())
         additional_matrix = {}
         for (_, entry, nm, util) in self.additional_matrix_settings:

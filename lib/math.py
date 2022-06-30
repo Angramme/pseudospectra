@@ -56,6 +56,9 @@ def gershgorin_componentwise(A, E, eps):
         return (a, r)
     return circles_to_bounds(map(circ, range(n)))
 
+def flatten(xss):
+    return [x for xs in xss for x in xs]
+
 
 class SegmentGrid():
     def __init__(self, lb, rb, bb, tb, gs, max_eps_dist):

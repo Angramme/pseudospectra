@@ -1,7 +1,7 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-from lib.math import gershgorin_componentwise, ssvd_min
+from lib.math import gershgorin_componentwise, flatten
 
 
 def main(
@@ -70,7 +70,10 @@ def main(
 
     P = plot
 
-    P.contour(xv, yv, grid, levels=eps)
+    eps.sort()
+    P.contour(xv, yv, grid,
+        levels=flatten([[x/(4.41421356237*n), x] for x in eps]),
+        colors=["red", "blue"]*len(eps))
 
     # P.imshow(grid.T, extent=(lb, rb, bb, tb), cmap='hot', interpolation='nearest')
     
