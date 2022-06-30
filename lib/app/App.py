@@ -6,7 +6,8 @@ import lib.app.defaults as app_defaults
 import tkinter as tk
 from tkinter import ttk
 from lib.app.AlgoWindow import AlgoWindow
-from functools import partial
+
+import numpy as np
 
 class App(tk.Tk):
     def __init__(self):
@@ -99,7 +100,7 @@ class App(tk.Tk):
         additional_matrix = {}
         for (_, entry, nm, util) in self.additional_matrix_settings:
             additional_matrix[nm] = util["parse"](entry.get())
-        matrix = mat_defaults["func"](size, **additional_matrix)
+        matrix = np.array(mat_defaults["func"](size, **additional_matrix))
         additional_algorithm = {}
         for (_, entry, nm, util) in self.additional_algorithm_settings:
             additional_algorithm[nm] = util["parse"](entry.get())
